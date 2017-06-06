@@ -1,0 +1,5 @@
+# https://hub.docker.com/_/mysql/
+mysql:
+    image: mysql:8.0.1
+    ports:
+      - "27017:27017"
