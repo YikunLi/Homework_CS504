@@ -1,8 +1,10 @@
 package analysis.domain;
 
 import lombok.Data;
+import org.springframework.context.annotation.Primary;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by lykly on 2017/6/11.
@@ -20,25 +22,25 @@ public class RunningInfo {
     private String runningId;
 
     @Column(name = "LATITUDE")
-    private String latitude;
+    private double latitude;
 
     @Column(name = "LONGITUDE")
-    private String longitude;
+    private double longitude;
 
     @Column(name = "RUNNING_DISTANCE")
     private double runningDistance;
 
     @Column(name = "TOTAL_RUNNING_TIME")
-    private long totalRunningTime;
+    private double totalRunningTime;
 
     @Column(name = "HEART_RATE")
     private int heartRate;
 
     @Column(name = "TIMESTAMP")
-    private long timestamp;
+    private Date timestamp;
 
     @JoinColumn(name = "USER_INFO_ID")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private UserInfo userInfo;
 
     private static final String HEALTH_WARNING_LEVEL_HIGH = "HIGH";

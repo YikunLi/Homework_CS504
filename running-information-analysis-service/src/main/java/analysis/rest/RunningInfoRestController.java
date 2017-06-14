@@ -2,6 +2,8 @@ package analysis.rest;
 
 import analysis.domain.RunningInfo;
 import analysis.domain.RunningInfoRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.List;
  * Created by lykly on 2017/6/11.
  */
 @RestController
-@RequestMapping(path = "runningInfos")
 public class RunningInfoRestController {
 
     private RunningInfoRepository runningInfoRepository;
@@ -31,47 +29,45 @@ public class RunningInfoRestController {
         this.runningInfoRepository = runningInfoRepository;
     }
 
-    public List<RunningInfo> findRunningInfosOrderByHeartRate(int page, int size) {
+    private List<RunningInfo> findRunningInfosOrderByHeartRate(int page, int size) {
         Sort sort = new Sort(Sort.Direction.DESC, "heartRate");
         Pageable pageable = new PageRequest(page, size, sort);
         Page<RunningInfo> result = this.runningInfoRepository.findAll(pageable);
         return result.getContent();
     }
 
-    @RequestMapping(path = "search")
-    public List<JSONObject> findRunningInfosOrderByHealthWarningLevel(int page, int size) {
+    @RequestMapping(value = "/running/search")
+    public List<ObjectNode> findRunningInfosOrderByHealthWarningLevel(@RequestParam(name = "page") int page,
+                                                                      @RequestParam(name = "size") int size) {
         List<RunningInfo> runningInfos = this.findRunningInfosOrderByHeartRate(page, size);
-        List<JSONObject> filterInfos = new ArrayList<JSONObject>();
+        List<ObjectNode> filterInfos = new ArrayList<ObjectNode>();
         if (runningInfos == null || runningInfos.size() == 0) {
             return filterInfos;
         }
         for (RunningInfo runningInfo : runningInfos) {
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put("runningId", runningInfo.getRunningId());
-                jsonObject.put("totalRunningTime", runningInfo.getTotalRunningTime());
-                jsonObject.put("heartRate", runningInfo.getHeartRate());
-                if (runningInfo.getUserInfo() != null) {
-                    jsonObject.put("userId", runningInfo.getUserInfo().getId());
-                    jsonObject.put("userName", runningInfo.getUserInfo().getUsername());
-                    jsonObject.put("userAddress", runningInfo.getUserInfo().getAddress());
-                }
-                jsonObject.put("healthWarningLevel", runningInfo.getHealthWarningLevel());
-            } catch (JSONException e) {
-                e.printStackTrace();
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode objectNode = objectMapper.createObjectNode();
+            objectNode.put("runningId", runningInfo.getRunningId());
+            objectNode.put("totalRunningTime", runningInfo.getTotalRunningTime());
+            objectNode.put("heartRate", runningInfo.getHeartRate());
+            if (runningInfo.getUserInfo() != null) {
+                objectNode.put("userId", runningInfo.getUserInfo().getId());
+                objectNode.put("userName", runningInfo.getUserInfo().getUsername());
+                objectNode.put("userAddress", runningInfo.getUserInfo().getAddress());
             }
-            filterInfos.add(jsonObject);
+            objectNode.put("healthWarningLevel", runningInfo.getHealthWarningLevel());
+            filterInfos.add(objectNode);
         }
         return filterInfos;
     }
 
-    @RequestMapping(path = "search", method = RequestMethod.GET)
-    public List<JSONObject> findRunningInfosOrderByHealthWarningLevel(int page) {
+    @RequestMapping(value = "/running/search", method = RequestMethod.GET)
+    public List<ObjectNode> findRunningInfosOrderByHealthWarningLevel(@RequestParam(name = "page") int page) {
         return this.findRunningInfosOrderByHealthWarningLevel(page, 2);
     }
 
-    @RequestMapping(path = "delete", method = RequestMethod.POST)
-    public void deleteRunningInfo(String runnningId) {
+    @RequestMapping(value = "/running/delete", method = RequestMethod.POST)
+    public void deleteRunningInfo(@RequestParam(name = "id") String runnningId) {
         this.runningInfoRepository.deleteByRunningId(runnningId);
     }
 
@@ -81,8 +77,8 @@ public class RunningInfoRestController {
 //        this.runningInfoRepository.save(runningInfo);
 //    }
 
-    @RequestMapping(path = "insert", method = RequestMethod.POST)
-    public void insertRunningInfos(List<RunningInfo> runningInfos) {
+    @RequestMapping(value = "/running/update", method = RequestMethod.POST)
+    public void insertRunningInfos(@RequestBody List<RunningInfo> runningInfos) {
         if (runningInfos == null || runningInfos.size() == 0) {
             return;
         }

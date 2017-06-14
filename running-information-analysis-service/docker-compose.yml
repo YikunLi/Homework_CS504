@@ -1,8 +1,7 @@
-# https://hub.docker.com/_/mysql/
 mysqlserver:
-    image: mysql:8.0.1
+    image: mysql/mysql-server
     ports:
-      - "12345:12345"
+      - "3306:3306"
     environment:
       MYSQL_DATABASE: running
       MYSQL_USER: liyikun
