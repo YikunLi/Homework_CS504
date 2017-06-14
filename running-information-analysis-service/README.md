@@ -93,6 +93,6 @@ http://localhost:8080/running/search?page=0
 ]
 ```
 也可以指定每一页的数量：
-http://localhost:8080/running/search?page=0&size=2
+http://localhost:8080/running/search?page=0&size=2  
 通过以下API可以根据running id删除某条信息：  
 http://localhost:8080/running/delete?id=7c08973d-bed4-4cbd-9c28-9282a02a6032
