@@ -6,6 +6,11 @@ import java.util.Map;
 public interface WeightedRandomSamplingAlgorithm {
 
     /**
+     * Random number of times
+     */
+    int RANDOM_NUMBER = 10000;
+
+    /**
      * Given n item, each one has weight weights[i], these weights form the unnormalized probability,
      * distribution we want to sample from, each item should have probability w[i]/sum(w) of being chosen.
      *

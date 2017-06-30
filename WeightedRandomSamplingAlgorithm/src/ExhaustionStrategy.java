@@ -5,11 +5,9 @@ import java.util.Map;
 /**
  * Created by liyikun on 2017/7/1.
  */
-public class RandomStrategy implements WeightedRandomSamplingAlgorithm {
+public class ExhaustionStrategy implements WeightedRandomSamplingAlgorithm {
 
     private static final int PRECISION = 100;
-
-    private static final int RANDOM_NUMBER = 10000;
 
     /**
      * 默认精度以100作为计算
